@@ -44,5 +44,3 @@ void loop() {
   button.loop();
 }
 ```
-
-**Current Limitation:** This library currently supports listening to only one event per button. In the future, there may be support for handling multiple events per button.

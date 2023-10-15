@@ -11,8 +11,9 @@
 
 ArduinoButton::ArduinoButton(int buttonPin) {
   setButtonPin(buttonPin);
-  setCallback(NULL);
-  setClickType(KEY_UP);
+  keyUpCallback = NULL;
+  keyDownCallback = NULL;
+  doubleClickCallback = NULL;
   prevState = digitalRead(buttonPin);
   setLastKeyDown(millis());
   setDoubleClickDelay(0);
@@ -21,7 +22,7 @@ ArduinoButton::ArduinoButton(int buttonPin) {
 }
 
 void ArduinoButton::loop() {
-  if(clickCallback == NULL) return;
+  if(keyUpCallback == NULL && keyDownCallback == NULL && doubleClickCallback == NULL) return;
   bool val = digitalRead(buttonPin);
 
   if(val != lastReading) {
@@ -31,51 +32,30 @@ void ArduinoButton::loop() {
   }
 
   if(val == lastReading &&  millis() - lastDebounceTime >= debounceDelay) {
-    switch(type) {
-      case KEY_UP:
-        if(val == LOW && prevState == HIGH) clickCallback();
-        break;
-      case KEY_DOWN:
-        if(val == HIGH && prevState == LOW) clickCallback();
-        break;
-      case DOUBLE_CLICK:
-        if(val == HIGH && prevState == LOW && millis() - lastKeyDown <= doubleClickDelay) clickCallback();
-        else if(val == HIGH && prevState == LOW) lastKeyDown = millis();
-        break;
-      default:
-        break;
-    }
+    if(keyUpCallback != NULL && val == LOW && prevState == HIGH) keyUpCallback();
+    if(keyDownCallback != NULL && val == HIGH && prevState == LOW) keyDownCallback();
+    if(doubleClickCallback != NULL && val == HIGH && prevState == LOW && millis() - lastKeyDown <= doubleClickDelay) doubleClickCallback();
+    else if (doubleClickCallback != NULL && val == HIGH && prevState == LOW) lastKeyDown = millis();
     prevState = val;
   }
   else return;
 }
 
 void ArduinoButton::onKeyUp(void (*cb)()) {
-  setCallback(cb);
-  setClickType(KEY_UP);
+  keyUpCallback = cb;
 }
 
 void ArduinoButton::onKeyDown(void (*cb)()) {
-  setCallback(cb);
-  setClickType(KEY_DOWN);
+  keyDownCallback = cb;
 }
 
 void ArduinoButton::onDoubleClick(void (*cb)(), int delay = 500) {
-  setCallback(cb);
-  setClickType(DOUBLE_CLICK);
+  doubleClickCallback = cb;
   setDoubleClickDelay(delay);
 }
 
 void ArduinoButton::setButtonPin(int pin) {
   buttonPin = pin;  
-}
-
-void ArduinoButton::setClickType(clickType click_type) {
-  type = click_type;
-}
-
-void ArduinoButton::setCallback(void (*cb)()) {
-  clickCallback = cb;
 }
 
 void ArduinoButton::setLastKeyDown(unsigned long num) {

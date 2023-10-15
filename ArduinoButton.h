@@ -11,15 +11,14 @@
 
 #include "Arduino.h"
 
-enum clickType { KEY_UP, KEY_DOWN, DOUBLE_CLICK };
-
 class ArduinoButton
 {
   private:
     int buttonPin;
-    clickType type; 
     bool prevState;
-    void (*clickCallback)();
+    void (*keyUpCallback)();
+    void (*keyDownCallback)();
+    void (*doubleClickCallback)();
     unsigned long lastKeyDown;
     int doubleClickDelay;
     int debounceDelay;
@@ -32,8 +31,6 @@ class ArduinoButton
     void onKeyDown(void (*cb)());
     void onDoubleClick(void (*cb)(), int delay = 500);
     void setButtonPin(int pin);
-    void setClickType(clickType type);
-    void setCallback(void (*cb)());
     void setLastKeyDown(unsigned long lastKeyDown);
     void setDoubleClickDelay(int delay);
     void setDebounceDelay(int delay);
