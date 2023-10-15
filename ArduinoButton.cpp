@@ -9,7 +9,7 @@
 #include "Arduino.h"
 #include "ArduinoButton.h"
 
-ArduinoButton::ArduinoButton(int buttonPin) {
+ArduinoButton::ArduinoButton(int buttonPin, bool isActiveLow) {
   setButtonPin(buttonPin);
   keyUpCallback = NULL;
   keyDownCallback = NULL;
@@ -19,6 +19,7 @@ ArduinoButton::ArduinoButton(int buttonPin) {
   setDoubleClickDelay(0);
   setDebounceDelay(20);
   setLastDebounceTime(millis());
+  setIsActiveLow(isActiveLow);
 }
 
 void ArduinoButton::loop() {
@@ -32,10 +33,10 @@ void ArduinoButton::loop() {
   }
 
   if(val == lastReading &&  millis() - lastDebounceTime >= debounceDelay) {
-    if(keyUpCallback != NULL && val == LOW && prevState == HIGH) keyUpCallback();
-    if(keyDownCallback != NULL && val == HIGH && prevState == LOW) keyDownCallback();
-    if(doubleClickCallback != NULL && val == HIGH && prevState == LOW && millis() - lastKeyDown <= doubleClickDelay) doubleClickCallback();
-    else if (doubleClickCallback != NULL && val == HIGH && prevState == LOW) lastKeyDown = millis();
+    if(keyUpCallback != NULL && val == normalizeButtonState(LOW) && prevState == normalizeButtonState(HIGH)) keyUpCallback();
+    if(keyDownCallback != NULL && val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW)) keyDownCallback();
+    if(doubleClickCallback != NULL && val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW) && millis() - lastKeyDown <= doubleClickDelay) doubleClickCallback();
+    else if (doubleClickCallback != NULL && val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW)) lastKeyDown = millis();
     prevState = val;
   }
   else return;
@@ -72,4 +73,12 @@ void ArduinoButton::setDebounceDelay(int delay) {
 
 void ArduinoButton::setLastDebounceTime(unsigned long time) {
   lastDebounceTime = time;
+}
+
+void ArduinoButton::setIsActiveLow(bool activeLow) {
+  isActiveLow = activeLow;
+}
+
+bool ArduinoButton::normalizeButtonState(bool state) {
+  return isActiveLow ? (state == HIGH ? LOW : HIGH) : state;
 }

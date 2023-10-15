@@ -24,8 +24,10 @@ class ArduinoButton
     int debounceDelay;
     unsigned long lastDebounceTime;
     bool lastReading;
+    bool isActiveLow;
+    bool normalizeButtonState(bool state);
   public:
-    ArduinoButton(int buttonPin);
+    ArduinoButton(int buttonPin, bool isActiveLow);
     void loop();
     void onKeyUp(void (*cb)());
     void onKeyDown(void (*cb)());
@@ -35,6 +37,7 @@ class ArduinoButton
     void setDoubleClickDelay(int delay);
     void setDebounceDelay(int delay);
     void setLastDebounceTime(unsigned long time);
+    void setIsActiveLow(bool aciveLow);
 };
 
 #endif
