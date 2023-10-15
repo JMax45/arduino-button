@@ -66,3 +66,9 @@ Buttons can be configured in two ways: active-low or active-high. Understanding 
 ![Active-LOW - Active-High Wiring](../media/activelow-activehigh-wiring.png?raw=true)
 
 Ensure that you connect the button and the library accordingly based on your chosen configuration (active-low or active-high). The library handles the specifics of button state detection, regardless of the configuration chosen.
+
+## Try It in Tinkercad
+
+For an interactive experience and to see the **ArduinoButton** library in action, you can try out the Tinkercad simulation [here](https://www.tinkercad.com/things/cQoIyexwYye?sharecode=UuMi6v6YufHdoHnIp__NBM_x-guCR6ciaEOjd89f70w). This simulation will help you understand how the library works and how to integrate it into your projects.
+
+Feel free to explore and experiment with the library in the Tinkercad environment to get a hands-on experience before implementing it in your hardware projects.
