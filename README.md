@@ -21,22 +21,22 @@ void setup() {
 
   // Callback for button release event
   button.onKeyUp([]() {
-    Serial.print("Button click callback");
+    Serial.println("Button click callback");
   });
 
   // Callback for button press event
   button.onKeyDown([]() {
-    Serial.print("Button down callback");
+    Serial.println("Button down callback");
   });
 
   // Callback for double click event
   button.onDoubleClick([]() {
-    Serial.print("Double click callback");
+    Serial.println("Double click callback");
   });
 
   // Callback for double click with a custom delay between two clicks (e.g., 1000ms)
   button.onDoubleClick([]() {
-    Serial.print("Double click callback with custom delay");
+    Serial.println("Double click callback with custom delay");
   }, 1000);
 }
 
