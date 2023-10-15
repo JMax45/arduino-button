@@ -1,11 +1,11 @@
 # ArduinoButton
 
-Library for facilitating interfacing with buttons.
+The **ArduinoButton** library simplifies interfacing with buttons on Arduino.
 
 ## Installation
 
 1. Download the latest zip file from the [releases](https://github.com/JMax45/arduino-button/releases) page.
-2. Install the zip file via Sketch->#include->Add library from .ZIP file.
+2. Install the zip file via Sketch -> #include -> Add library from .ZIP file.
 
 ## Usage
 
@@ -14,29 +14,29 @@ Library for facilitating interfacing with buttons.
 
 #define BUTTON_PIN 7
 
-ArduinoButton button(BUTTON_PIN);
+ArduinoButton button(BUTTON_PIN, false); // Set to true for active-low, false for active-high
 
 void setup() {
   Serial.begin(9600);
 
-  // Callback for key up event
+  // Callback for button release event
   button.onKeyUp([]() {
-    Serial.print("button click callback");
+    Serial.print("Button click callback");
   });
 
-  // Callback for key down event
+  // Callback for button press event
   button.onKeyDown([]() {
-    Serial.print("button down callback");
+    Serial.print("Button down callback");
   });
 
   // Callback for double click event
   button.onDoubleClick([]() {
-    Serial.print("double click callback");
+    Serial.print("Double click callback");
   });
 
   // Callback for double click with a custom delay between two clicks (e.g., 1000ms)
   button.onDoubleClick([]() {
-    Serial.print("double click callback with custom delay");
+    Serial.print("Double click callback with custom delay");
   }, 1000);
 }
 
@@ -44,3 +44,25 @@ void loop() {
   button.loop();
 }
 ```
+
+**Note**: The second parameter in `ArduinoButton button(BUTTON_PIN, false);` indicates whether the button is active-low (true) or active-high (false).
+
+## Active-Low vs. Active-High Buttons
+
+Buttons can be configured in two ways: active-low or active-high. Understanding the difference is important.
+
+### Active-Low
+
+- In an active-low configuration, the button is considered "pressed" or "active" when its input is pulled low, typically to GND (Ground).
+- When the button is not pressed, its input is held high (typically at VCC or the power supply voltage).
+- Active-low buttons are commonly used because they are often more straightforward to wire and interface.
+
+### Active-High
+
+- In an active-high configuration, the button is considered "pressed" or "active" when its input is connected to the power supply voltage (VCC).
+- When the button is not pressed, its input is pulled low, typically to GND (Ground).
+- Active-high buttons can be useful in certain scenarios.
+
+![Active-LOW - Active-High Wiring](../media/activelow-activehigh-wiring.png?raw=true)
+
+Ensure that you connect the button and the library accordingly based on your chosen configuration (active-low or active-high). The library handles the specifics of button state detection, regardless of the configuration chosen.
