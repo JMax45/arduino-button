@@ -20,6 +20,8 @@ ArduinoButton::ArduinoButton(int buttonPin, bool isActiveLow) {
   setDebounceDelay(20);
   setLastDebounceTime(millis());
   setIsActiveLow(isActiveLow);
+  setLongKeyDownLastReading(millis());
+  longKeyDownIsHeld = false;
 }
 
 void ArduinoButton::loop() {
@@ -37,6 +39,20 @@ void ArduinoButton::loop() {
     if(keyDownCallback != NULL && val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW)) keyDownCallback();
     if(doubleClickCallback != NULL && val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW) && millis() - lastKeyDown <= doubleClickDelay) doubleClickCallback();
     else if (doubleClickCallback != NULL && val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW)) lastKeyDown = millis();
+    if(longKeyDownCallback != NULL) {
+      if(val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(LOW) && !longKeyDownIsHeld) setLongKeyDownLastReading(millis());
+      if(val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(HIGH) && !longKeyDownIsHeld && millis() - longKeyDownLastReading >= longKeyDownInitialDelay) {
+        setLongKeyDownLastReading(millis());
+        longKeyDownIsHeld = true;
+        longKeyDownCallback();
+      } else if (val == normalizeButtonState(HIGH) && prevState == normalizeButtonState(HIGH) && longKeyDownIsHeld && millis() - longKeyDownLastReading >= longKeyDownDelay) {
+        setLongKeyDownLastReading(millis());
+        longKeyDownCallback();
+      } else if (val == normalizeButtonState(LOW) && prevState == normalizeButtonState(HIGH) && longKeyDownIsHeld) {
+        setLongKeyDownLastReading(millis());
+        longKeyDownIsHeld = false;
+      }
+    }
     prevState = val;
   }
   else return;
@@ -53,6 +69,12 @@ void ArduinoButton::onKeyDown(void (*cb)()) {
 void ArduinoButton::onDoubleClick(void (*cb)(), int delay = 500) {
   doubleClickCallback = cb;
   setDoubleClickDelay(delay);
+}
+
+void ArduinoButton::onLongKeyDown(void (*cb)(), int initialDelay = 1000, int delay = 500) {
+  longKeyDownCallback = cb;
+  longKeyDownInitialDelay = initialDelay;
+  setLongKeyDownDelay(delay);
 }
 
 void ArduinoButton::setButtonPin(int pin) {
@@ -81,4 +103,12 @@ void ArduinoButton::setIsActiveLow(bool activeLow) {
 
 bool ArduinoButton::normalizeButtonState(bool state) {
   return isActiveLow ? (state == HIGH ? LOW : HIGH) : state;
+}
+
+void ArduinoButton::setLongKeyDownDelay(int delay) {
+  longKeyDownDelay = delay;
+}
+
+void ArduinoButton::setLongKeyDownLastReading(unsigned long time) {
+  longKeyDownLastReading = time;  
 }
